@@ -39,6 +39,6 @@ CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --train_batch_size 2 \
     --eval_batch_size 8 \
     --num_epochs 400 \
-    --seg_dir "/data/private/autoPET/autopet_2d/label" \
+    --seg_dir "/data/private/autoPET/autopet_2d/mask" \
     --segmentation_guided \
     --num_segmentation_classes 37
