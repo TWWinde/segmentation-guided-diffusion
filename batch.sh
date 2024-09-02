@@ -36,7 +36,7 @@ CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --num_img_channels 1 \
     --dataset "AutoPET" \
     --img_dir "/data/private/autoPET/autopet_2d/image" \
-    --train_batch_size 4 \
+    --train_batch_size 8 \
     --eval_batch_size 8 \
     --num_epochs 400 \
     --seg_dir "/data/private/autoPET/autopet_2d/mask" \
