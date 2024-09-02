@@ -45,7 +45,7 @@ def main(
     print('running on {}'.format(device))
 
     # load config
-    output_dir = '{}-{}-{}'.format(model_type.lower(), dataset, img_size)  # the model namy locally and on the HF Hub
+    output_dir = '/data/private/autoPET/' + '{}-{}-{}'.format(model_type.lower(), dataset, img_size)  # the model namy locally and on the HF Hub
     if segmentation_guided:
         output_dir += "-segguided"
         assert seg_dir is not None, "must provide segmentation directory for segmentation guided training/sampling"
