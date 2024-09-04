@@ -400,7 +400,7 @@ if __name__ == "__main__":
     parser.add_argument('--train_batch_size', type=int, default=32)
     parser.add_argument('--eval_batch_size', type=int, default=8)
     parser.add_argument('--num_epochs', type=int, default=200)
-    parser.add_argument('--resume_epoch', type=int, default=None, help='resume training starting at this epoch')
+    parser.add_argument('--resume_epoch', type=int, default=5, help='resume training starting at this epoch')
 
     # novel options
     parser.add_argument('--use_ablated_segmentations', action='store_true', help='use mask ablated training and any evaluation? sometimes randomly remove class(es) from mask during training and sampling.')
