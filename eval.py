@@ -353,6 +353,7 @@ def add_segmentations_to_noise(noisy_images, segmentations_batch, config, device
 
     if config.segmentation_channel_mode == "single":
         multiclass_masks_shape = (noisy_images.shape[0], 1, noisy_images.shape[2], noisy_images.shape[3])
+        print(segmentations_batch.shape)
         segs = convert_segbatch_to_multiclass(multiclass_masks_shape, segmentations_batch, config, device) 
         # concat segs to noise
         noisy_images = torch.cat((noisy_images, segs), dim=1)
