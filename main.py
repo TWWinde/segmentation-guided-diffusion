@@ -21,8 +21,8 @@ from eval import evaluate_generation, evaluate_sample_many
 class ImageFolderDataset(Dataset):
     def __init__(self, folder_path=None):
 
-        self.folder_path = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results"
-        self.image_files = [f for f in os.listdir(os.path.join(self.folder_path, 'label')) if f.endswith(".npy")]
+        self.folder_path = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/label"
+        self.image_files = [f for f in os.listdir(os.path.join(self.folder_path)) if f.endswith(".npy")]
         self.num_slices_per_image = 32
 
     def __len__(self):
@@ -35,7 +35,8 @@ class ImageFolderDataset(Dataset):
         slice_idx = idx % self.num_slices_per_image  # 计算出图像中的切片索引
 
         img_path = self.image_files[image_idx]
-        img = np.load(img_path)
+        path = os.path.join(self.folder_path, img_path)
+        img = np.load(path)
         img = np.squeeze(img, axis=0)
         img = np.squeeze(img, axis=0)
 
