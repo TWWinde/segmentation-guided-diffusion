@@ -12,10 +12,37 @@ import numpy as np
 import diffusers
 from diffusers.optimization import get_cosine_schedule_with_warmup
 import datasets
-
+from torch.utils.data import Dataset
 # custom imports
 from training import TrainingConfig, train_loop
 from eval import evaluate_generation, evaluate_sample_many
+
+
+class ImageFolderDataset(Dataset):
+    def __init__(self, folder_path=None):
+
+        self.folder_path = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results"
+        self.image_files = [f for f in os.listdir(os.path.join(self.folder_path, 'label')) if f.endswith(".npy")]
+        self.num_slices_per_image = 32
+
+    def __len__(self):
+
+        return len(self.image_files) * self.num_slices_per_image
+
+    def __getitem__(self, idx):
+
+        image_idx = idx // self.num_slices_per_image  # 计算出图像文件的索引
+        slice_idx = idx % self.num_slices_per_image  # 计算出图像中的切片索引
+
+        img_path = self.image_files[image_idx]
+        img = np.load(img_path)
+        img = np.squeeze(img, axis=0)
+        img = np.squeeze(img, axis=0)
+
+        img_slice = img[slice_idx, :, :]
+
+        return torch.tensor(img_slice, dtype=torch.float32)
+
 
 def main(
     mode,
@@ -139,19 +166,21 @@ def main(
             dset_dict_eval["image_filename"] = [os.path.basename(f) for f in dset_dict_eval["seg_{}".format(seg_types[0])]]
 
         dataset_train = datasets.Dataset.from_dict(dset_dict_train)
-        dataset_eval = datasets.Dataset.from_dict(dset_dict_eval)
+        #dataset_eval = datasets.Dataset.from_dict(dset_dict_eval)
+        dataset_eval = ImageFolderDataset()
 
         # load the images
         if not load_images_as_np_arrays and img_dir is not None:
             dataset_train = dataset_train.cast_column("image", datasets.Image())
-            dataset_eval = dataset_eval.cast_column("image", datasets.Image())
+            #dataset_eval = dataset_eval.cast_column("image", datasets.Image())
+            dataset_eval = ImageFolderDataset()
 
         for seg_type in seg_types:
             dataset_train = dataset_train.cast_column("seg_{}".format(seg_type), datasets.Image())
 
         for seg_type in seg_types:
-            dataset_eval = dataset_eval.cast_column("seg_{}".format(seg_type), datasets.Image())
-
+            #dataset_eval = dataset_eval.cast_column("seg_{}".format(seg_type), datasets.Image())
+            dataset_eval = ImageFolderDataset()
     else:
         if img_dir is not None:
             img_dir_train = os.path.join(img_dir, "train")
@@ -239,7 +268,7 @@ def main(
                 return {**segs, **{"image_filenames": images_filenames}}
             
         dataset_train.set_transform(transform)
-        dataset_eval.set_transform(transform)
+        #dataset_eval.set_transform(transform)
 
     else:
         if img_dir is not None:
@@ -398,7 +427,7 @@ if __name__ == "__main__":
     parser.add_argument('--segmentation_channel_mode', type=str, default="single", help='single == all segmentations in one channel, multi == each segmentation in its own channel')
     parser.add_argument('--num_segmentation_classes', type=int, default=None, help='number of segmentation classes, including background')
     parser.add_argument('--train_batch_size', type=int, default=32)
-    parser.add_argument('--eval_batch_size', type=int, default=8)
+    parser.add_argument('--eval_batch_size', type=int, default=32)
     parser.add_argument('--num_epochs', type=int, default=200)
     parser.add_argument('--resume_epoch', type=int, default=5, help='resume training starting at this epoch')
 
