@@ -84,7 +84,7 @@ def evaluate_sample_many(
                     img_fname = f"{sample_dir}/{num_sampled + i:04d}.png"
                 img = np.squeeze(img, axis=-1)
                 img = (img * 255).astype(np.uint8)
-                img = Image.fromarray(img)
+                img = Image.fromarray(img, mode='L')
                 img.save(img_fname)
 
             num_sampled += len(images)
