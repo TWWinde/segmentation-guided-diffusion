@@ -66,7 +66,7 @@ def evaluate_sample_many(
                 images = pipeline(
                     batch_size = current_batch_size,
                     seg_batch=seg_batch,
-                ).images
+                ) #.images
             else:
                 images = pipeline(
                     batch_size = current_batch_size,
