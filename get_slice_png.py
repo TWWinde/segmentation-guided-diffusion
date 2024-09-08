@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 import os
-
+import nibabel as nib
 
 def save_slices_as_png(array_3d, output_dir, name):
     # 1. 加载 .npy 文件
@@ -37,14 +37,15 @@ def save_slices_as_png(array_3d, output_dir, name):
 
 
 if __name__ == "__main__":
-    root_path = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/label"
+    root_path = "/data/private/autoPET/autopet_3d/test/label"
     label_path = os.listdir(root_path)
     output_root = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/mask/all/test"
     os.makedirs(output_root, exist_ok=True)
     for item in sorted(label_path):
         name = int(item.split("_")[0])
         path = os.path.join(root_path, item)
-        arrray = np.load(path)
-        arrray = np.squeeze(arrray, axis=0)
-        arrray = np.squeeze(arrray, axis=0)
-        save_slices_as_png(arrray, output_root, name)
+        img = nib.load(path)
+        data = img.get_fdata()
+        #arrray = np.squeeze(arrray, axis=0)
+        #arrray = np.squeeze(arrray, axis=0)
+        save_slices_as_png(data, output_root, name)
