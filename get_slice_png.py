@@ -33,7 +33,7 @@ def save_slices_as_png(array_3d, output_dir, name):
 
         img.save(os.path.join(output_dir, f"ts_{i+name*32}.png"))
 
-    #print(f"保存了 {depth} 张切片图像到 {output_dir}.")
+    print(f"保存了 {depth} 张切片图像到 {output_dir}.")
 
 
 if __name__ == "__main__":
