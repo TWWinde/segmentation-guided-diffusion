@@ -42,7 +42,7 @@ if __name__ == "__main__":
     output_root = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/mask/all/test"
     os.makedirs(output_root, exist_ok=True)
     for item in sorted(label_path):
-        name = int(item.split("-")[0])
+        name = int(item.split("_")[0])
         path = os.path.join(root_path, item)
         arrray = np.load(path)
         arrray = np.squeeze(arrray, axis=0)
