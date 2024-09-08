@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple, Union
 from tqdm import tqdm
 from copy import deepcopy
 import numpy as np
-
+from PIL import Image
 import diffusers
 from diffusers import DiffusionPipeline, ImagePipelineOutput, DDIMScheduler
 from diffusers.utils.torch_utils import randn_tensor 
@@ -72,6 +72,7 @@ def evaluate_sample_many(
                     batch_size = current_batch_size,
                 ).images
 
+            print(images.shape)
 
             for i, img in enumerate(images):
                 if config.segmentation_guided:
@@ -79,6 +80,7 @@ def evaluate_sample_many(
                     img_fname = "{}/condon_{}".format(sample_dir, i)
                 else:
                     img_fname = f"{sample_dir}/{num_sampled + i:04d}.png"
+                img_fname = Image.fromarray(img_fname)
                 img.save(img_fname)
 
             num_sampled += len(images)
