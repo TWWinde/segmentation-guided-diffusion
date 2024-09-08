@@ -76,6 +76,7 @@ def evaluate_sample_many(
             print(images.shape)
 
             for i, img in enumerate(images):
+                print(img.shape)
                 if config.segmentation_guided:
                     # name base on input mask fname
                     img_fname = "{}/condon_{}".format(sample_dir, i)
