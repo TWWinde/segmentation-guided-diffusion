@@ -305,7 +305,7 @@ def main(
         eval_dataloader = torch.utils.data.DataLoader(
                 dataset_eval, 
                 batch_size=config.eval_batch_size, 
-                shuffle=eval_shuffle_dataloader
+                shuffle=False      #eval_shuffle_dataloader
                 )
 
     # define the model

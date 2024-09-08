@@ -310,10 +310,10 @@ def convert_segbatch_to_multiclass(shape, segmentations_batch, config, device):
     # NOTE: this generic function assumes that segs don't overlap
     # put all segs on same channel
     segs = torch.zeros(shape).to(device)
-    for k, seg in segmentations_batch.items():
-        if k.startswith("seg_"):
-            seg = seg.to(device)
-            segs[segs == 0] = seg[segs == 0]
+    for seg in segmentations_batch:
+        #if k.startswith("seg_"):
+        seg = seg.to(device)
+        segs[segs == 0] = seg[segs == 0]
 
     if config.use_ablated_segmentations:
         # randomly remove class labels from segs with some probability
