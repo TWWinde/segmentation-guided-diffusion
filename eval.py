@@ -56,6 +56,7 @@ def evaluate_sample_many(
     num_sampled = 0
     # keep sampling images until we have enough
     for bidx, seg_batch in tqdm(enumerate(eval_dataloader), total=len(eval_dataloader)):
+        print(seg_batch.shape)
         if num_sampled < sample_size:
             if config.segmentation_guided:
                 current_batch_size = 32 #[v for k, v in seg_batch.items() if k.startswith("seg_")][0].shape[0]
@@ -80,7 +81,7 @@ def evaluate_sample_many(
                     img_fname = "{}/condon_{}".format(sample_dir, i)
                 else:
                     img_fname = f"{sample_dir}/{num_sampled + i:04d}.png"
-                img_fname = Image.fromarray(img_fname)
+                img = Image.fromarray(img)
                 img.save(img_fname)
 
             num_sampled += len(images)
