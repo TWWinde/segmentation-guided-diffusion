@@ -312,7 +312,10 @@ def convert_segbatch_to_multiclass(shape, segmentations_batch, config, device):
     for i, seg in enumerate(segmentations_batch):
         #if k.startswith("seg_"):
         seg = seg.to(device)
-        segs[segs == 0] = seg[segs == 0]
+        mask = (segs == 0)
+
+        # 在布尔掩码选择的区域，将 seg 的值填充到 segs 中
+        segs[mask] = seg[mask]
 
     if config.use_ablated_segmentations:
         # randomly remove class labels from segs with some probability
