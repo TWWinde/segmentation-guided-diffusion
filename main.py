@@ -37,10 +37,10 @@ class ImageFolderDataset(Dataset):
         img_path = self.image_files[image_idx]
         path = os.path.join(self.folder_path, img_path)
         img = np.load(path)
-        img = np.squeeze(img, axis=0)
+        #img = np.squeeze(img, axis=0)
         img = np.squeeze(img, axis=0)
 
-        img_slice = img[slice_idx, :, :]
+        img_slice = img[:, slice_idx, :, :]
 
         return torch.tensor(img_slice, dtype=torch.float32)
 

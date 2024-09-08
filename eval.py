@@ -221,7 +221,6 @@ def evaluate_generation(
                 else:
                     result_imgs += removed_seg_imgs
 
-
         else:
             for seg_type in seg_batch.keys():
                 # some datasets have multiple tissue segs stored in multiple masks
