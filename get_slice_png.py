@@ -41,12 +41,14 @@ if __name__ == "__main__":
     label_path = os.listdir(root_path)
     output_root = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/mask/all/test"
     os.makedirs(output_root, exist_ok=True)
+    i = 0
     for item in sorted(label_path):
-        name = int(item.split("_")[0])
-        print(name)
         path = os.path.join(root_path, item)
         img = nib.load(path)
         data = img.get_fdata()
         #arrray = np.squeeze(arrray, axis=0)
         #arrray = np.squeeze(arrray, axis=0)
-        save_slices_as_png(data, output_root, name)
+        save_slices_as_png(data, output_root, i)
+        i+=1
+        if i == 1000:
+            break
