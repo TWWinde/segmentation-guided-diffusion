@@ -43,6 +43,7 @@ if __name__ == "__main__":
     os.makedirs(output_root, exist_ok=True)
     for item in sorted(label_path):
         name = int(item.split("_")[0])
+        print(name)
         path = os.path.join(root_path, item)
         img = nib.load(path)
         data = img.get_fdata()
