@@ -20,10 +20,19 @@ def save_slices_as_png(array_3d, output_dir):
     # 2. 遍历 depth 维度，逐层切片
     for i in range(depth):
         # 获取第 i 个切片 (二维切片)
-        slice_2d = array_3d[i, :, :]
+        data = array_3d[i, :, :]
+        unique_values = np.unique(data)
+
+        print("Unique pixel values in the NIfTI image:")
+        print(unique_values)
+        print(data.shape)
+        print(data.dtype)
+        print(data.min())
+        print(data.max())
+
 
         # 将 NumPy 数组转换为 PIL 图像
-        img = Image.fromarray(slice_2d, mode='L')  # 单通道灰度图
+        img = Image.fromarray(data, mode='L')  # 单通道灰度图
 
         # 3. 保存每个切片为 PNG 图片
         img.save(os.path.join(output_dir, f"slice_{i:03d}.png"))  # 保存文件名为 slice_000.png, slice_001.png, ...
