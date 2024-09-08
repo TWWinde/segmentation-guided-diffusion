@@ -38,6 +38,6 @@ CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --dataset {DATASET_NAME} \
     --eval_batch_size 8 \
     --eval_sample_size 100 \
-     --seg_dir "/data/private/autoPET/autopet_2d/mask" \
+    --seg_dir "/data/private/autoPET/autopet_2d/mask" \
     --segmentation_guided \
     --num_segmentation_classes 37

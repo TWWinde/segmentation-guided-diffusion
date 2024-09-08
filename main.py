@@ -100,8 +100,8 @@ def main(
                                              os.listdir(img_dir_train)]
         else:
             for seg_type in seg_types:
-                seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "train", f) for f in
-                                             os.listdir(os.path.join(seg_dir, seg_type, "train"))]
+                seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "test", f) for f in
+                                             os.listdir(os.path.join(seg_dir, seg_type, "test"))]
 
         # eval set
         if img_dir is not None:
