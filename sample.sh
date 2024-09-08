@@ -37,6 +37,6 @@ CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --dataset "AutoPET" \
     --eval_batch_size 32 \
     --eval_sample_size 320 \
-    --seg_dir "/data/private/autoPET/autopet_2d/mask" \
+    --seg_dir "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/mask" \
     --segmentation_guided \
     --num_segmentation_classes 37
