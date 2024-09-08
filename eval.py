@@ -73,6 +73,10 @@ def evaluate_sample_many(
                 ).images
 
             # save each image in the list separately
+            if isinstance(images, list) and isinstance(images[0], torch.Tensor):
+                images = torch.stack(images)  # 将列表中的张量堆叠成一个张量
+
+            # 现在你可以获取张量的形状
             print(images.shape)
             for i, img in enumerate(images):
                 if config.segmentation_guided:
