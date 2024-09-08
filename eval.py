@@ -309,7 +309,7 @@ def convert_segbatch_to_multiclass(shape, segmentations_batch, config, device):
     # NOTE: this generic function assumes that segs don't overlap
     # put all segs on same channel
     segs = torch.zeros(shape).to(device)
-    for seg in segmentations_batch:
+    for i, seg in enumerate(segmentations_batch):
         #if k.startswith("seg_"):
         seg = seg.to(device)
         segs[segs == 0] = seg[segs == 0]
@@ -353,7 +353,7 @@ def add_segmentations_to_noise(noisy_images, segmentations_batch, config, device
 
     if config.segmentation_channel_mode == "single":
         multiclass_masks_shape = (noisy_images.shape[0], 1, noisy_images.shape[2], noisy_images.shape[3])
-        print(segmentations_batch.shape)
+        # segmentations_batch.shape  torch.Size([8, 1, 256, 256])
         segs = convert_segbatch_to_multiclass(multiclass_masks_shape, segmentations_batch, config, device) 
         # concat segs to noise
         noisy_images = torch.cat((noisy_images, segs), dim=1)
