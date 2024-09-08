@@ -72,12 +72,7 @@ def evaluate_sample_many(
                     batch_size = current_batch_size,
                 ).images
 
-            # save each image in the list separately
-            if isinstance(images, list) and isinstance(images[0], torch.Tensor):
-                images = torch.stack(images)  # 将列表中的张量堆叠成一个张量
 
-            # 现在你可以获取张量的形状
-            print(images.shape)
             for i, img in enumerate(images):
                 if config.segmentation_guided:
                     # name base on input mask fname
@@ -852,10 +847,12 @@ class SegGuidedDDIMPipeline(DiffusionPipeline):
 
         image = (image / 2 + 0.5).clamp(0, 1)
         image = image.cpu().permute(0, 2, 3, 1).numpy()
-        if output_type == "pil":
-            image = self.numpy_to_pil(image)
 
-        if not return_dict:
-            return (image,)
+        return image
+        #if output_type == "pil":
+            #image = self.numpy_to_pil(image)
 
-        return ImagePipelineOutput(images=image)
+        #if not return_dict:
+            #return (image,)
+
+        #return ImagePipelineOutput(images=image)
