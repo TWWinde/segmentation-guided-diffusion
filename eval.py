@@ -56,7 +56,7 @@ def evaluate_sample_many(
     num_sampled = 0
     # keep sampling images until we have enough
     for bidx, seg_batch in tqdm(enumerate(eval_dataloader), total=len(eval_dataloader)):
-        print(seg_batch.shape)
+        #print(seg_batch.shape) torch.Size([32, 1, 256, 256])
         if num_sampled < sample_size:
             if config.segmentation_guided:
                 current_batch_size = 32 #[v for k, v in seg_batch.items() if k.startswith("seg_")][0].shape[0]
@@ -73,13 +73,13 @@ def evaluate_sample_many(
                     batch_size = current_batch_size,
                 ).images
 
-            print(images.shape)
+            #print(images.shape) (32, 256, 256, 1)
 
             for i, img in enumerate(images):
-                print(img.shape)
+                #print(img.shape) (256, 256, 1)
                 if config.segmentation_guided:
                     # name base on input mask fname
-                    img_fname = "{}/condon_{}".format(sample_dir, i)
+                    img_fname = "{}/condon_{}.png".format(sample_dir, i)
                 else:
                     img_fname = f"{sample_dir}/{num_sampled + i:04d}.png"
                 img = np.squeeze(img, axis=-1)
