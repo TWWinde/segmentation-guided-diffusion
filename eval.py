@@ -58,7 +58,7 @@ def evaluate_sample_many(
     for bidx, seg_batch in tqdm(enumerate(eval_dataloader), total=len(eval_dataloader)):
         if num_sampled < sample_size:
             if config.segmentation_guided:
-                current_batch_size = [v for k, v in seg_batch.items() if k.startswith("seg_")][0].shape[0]
+                current_batch_size = 32 #[v for k, v in seg_batch.items() if k.startswith("seg_")][0].shape[0]
             else:
                 current_batch_size = config.eval_batch_size
 
