@@ -3,9 +3,8 @@ from PIL import Image
 import os
 
 
-def save_slices_as_png(npy_file, output_dir):
+def save_slices_as_png(array_3d, output_dir):
     # 1. 加载 .npy 文件
-    array_3d = np.load(npy_file)
     print(array_3d.shape)
     # 检查 array_3d 的形状，确保它是一个三维矩阵
     if len(array_3d.shape) != 3:
