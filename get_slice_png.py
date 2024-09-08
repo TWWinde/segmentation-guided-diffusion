@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import nibabel as nib
 
+
 def save_slices_as_png(array_3d, output_dir, name):
     # 1. 加载 .npy 文件
     print(array_3d.shape)
@@ -11,7 +12,7 @@ def save_slices_as_png(array_3d, output_dir, name):
         raise ValueError("输入的 NumPy 数组必须是三维的。")
 
     # 获取三维矩阵的维度 (depth, height, width)
-    depth, height, width = array_3d.shape
+    height, width, depth = array_3d.shape
 
     # 创建输出目录，如果不存在的话
     if not os.path.exists(output_dir):
