@@ -19,7 +19,7 @@ def save_slices_as_png(array_3d, output_dir, name):
     # 2. 遍历 depth 维度，逐层切片
     for i in range(depth):
         # 获取第 i 个切片 (二维切片)
-        data = array_3d[i, :, :]
+        data = array_3d[:, :, i]
         """
         unique_values = np.unique(data)
         print("Unique pixel values in the NIfTI image:")
