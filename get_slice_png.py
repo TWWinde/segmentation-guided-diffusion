@@ -40,4 +40,6 @@ if __name__ == "__main__":
         name = item.split("-")[0]
         path = os.path.join(root_path, item)
         arrray = np.load(path)
+        arrray = np.squeeze(arrray, axis=0)
+        arrray = np.squeeze(arrray, axis=0)
         save_slices_as_png(arrray, output_root)
