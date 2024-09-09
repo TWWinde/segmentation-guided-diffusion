@@ -32,10 +32,10 @@ def compute_metrics( ):
         d = loss_fn_alex(input3, input4)
         pips.append(d.mean().item())
         # PSNR, RMSE
-        mse = np.mean((input1 - input2) ** 2)
+        mse = torch.nn.functional.mse_loss(input3, input4)
         max_pixel_value = 1.0
         psnr_value = 10 * torch.log10((max_pixel_value ** 2) / mse)
-        rmse_value = np.sqrt(mse)
+        rmse_value = torch.sqrt(mse)
         psnr.append(psnr_value.mean().item())
         rmse.append(rmse_value.mean().item())
 
