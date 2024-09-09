@@ -96,11 +96,12 @@ def compute_metrics_3d( ):
         input2 = np.load(path_fake)
         print(input1.shape)
         print(input2.shape)
-        for i in range(input1.shape[3]):
-            input3 = torch.tensor(input1, dtype=torch.float32)
-            input4 = torch.tensor(input2, dtype=torch.float32)
-            input3 = input3.unsqueeze(0).unsqueeze(0).to('cuda:0')  # (1, 1, 256, 256)
-            input4 = input4.unsqueeze(0).unsqueeze(0).to('cuda:0')
+        for i in range(input1.shape[2]):
+
+            input3 = torch.tensor(input1[:, :, i, :, :], dtype=torch.float32).to('cuda:0')
+            input4 = torch.tensor(input2[:, :, i, :, :], dtype=torch.float32).to('cuda:0')
+            #input3 = input3.unsqueeze(0).unsqueeze(0).to('cuda:0')  # (1, 1, 256, 256)
+            #input4 = input4.unsqueeze(0).unsqueeze(0).to('cuda:0')
 
             ssim_value = pytorch_msssim.ssim(input3, input4)
             ssim.append(ssim_value.mean().item())
