@@ -1,79 +1,77 @@
 import os
-from PIL import Image
 import numpy as np
-import pytorch_msssim
-import lpips
 import torch
-from pytorch_fid import fid_score
 from scipy import linalg # For numpy FID
 from pathlib import Path
 from fid_folder.inception import InceptionV3
+import matplotlib.pyplot as plt
+
+# --------------------------------------------------------------------------#
+# This code is an adapted version of https://github.com/mseitzer/pytorch-fid
+# --------------------------------------------------------------------------#
 
 
-def compute_metrics( ):
-    pool1, pool2 = [], []
-    pips, ssim, psnr, rmse = [], [], [], []
-    loss_fn_alex = lpips.LPIPS(net='vgg')
-    loss_fn_alex = loss_fn_alex.to('cuda:0')
-    path_real_root = "/data/private/autoPET/autopet_2d/image/test"
-    path_fake_root = "/data/private/autoPET/ddim-AutoPET-256-segguided/samples_many_320"
-    path_list = os.listdir(path_fake_root)
-    dims = 2048
-    block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[dims]
-    model_inc = InceptionV3([block_idx])
-    model_inc.cuda()
-    for item in path_list:
-        path_fake = os.path.join(path_fake_root, item)
-        real_name = item.replace("condon_", "")
-        path_real = os.path.join(path_real_root, real_name)
-        input1 = Image.open(path_real)
-        input1 = np.array(input1)/255.0
-        input2 = Image.open(path_fake)
-        input2 = np.array(input2)/255.0
+class fid_pytorch():
+    def __init__(self, opt,  dataloader_real=None, cross_domain_training=False):
+        self.opt = opt
+        self.dims = 2048
+        block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[self.dims]
+        self.model_inc = InceptionV3([block_idx])
+        self.model_inc.cuda()
+        self.dataloader_real = dataloader_real
+        self.cross_domain_training = cross_domain_training
+        if self.cross_domain_training:
+            self.m1, self.s1 = self.compute_statistics_of_val_path(dataloader_real)
+        else:
+            self.m1, self.s1 = self.compute_statistics_of_val_path(dataloader_val)
+        self.best_fid = 99999999
+        self.path_to_save = os.path.join(self.opt.checkpoints_dir, self.opt.name, "FID")
+        Path(self.path_to_save).mkdir(parents=True, exist_ok=True)
 
-        input3 = torch.tensor(input1, dtype=torch.float32)
-        input4 = torch.tensor(input2, dtype=torch.float32)
-        input3 = input3.unsqueeze(0).unsqueeze(0).to('cuda:0')  # (1, 1, 256, 256)
-        input4 = input4.unsqueeze(0).unsqueeze(0).to('cuda:0')
+    def compute_statistics_of_val_path(self, dataloader_val):
+        print("--- Now computing Inception activations for real set ---")
+        pool = self.accumulate_inception_activations(dataloader_val)
+        mu, sigma = torch.mean(pool, 0), torch_cov(pool, rowvar=False)
+        print("--- Finished FID stats for real set ---")
+        return mu, sigma
 
-        ssim_value = pytorch_msssim.ssim(input3, input4)
-        ssim.append(ssim_value.mean().item())
-        # PIPS lpips
-        d = loss_fn_alex(input3, input4)
-        pips.append(d.mean().item())
-        # PSNR, RMSE
-        mse = torch.nn.functional.mse_loss(input3, input4)
-        max_pixel_value = 1.0
-        psnr_value = 10 * torch.log10((max_pixel_value ** 2) / mse)
-        rmse_value = torch.sqrt(mse)
-        psnr.append(psnr_value.mean().item())
-        rmse.append(rmse_value.mean().item())
-        pool_real = model_inc(input3.float())[0][:, :, 0, 0]
-        pool1 += [pool_real]
-        pool_fake = model_inc(input4.float())[0][:, :, 0, 0]
-        pool2 += [pool_real]
+    def accumulate_inception_activations(self, dataloader_val):
+        pool, logits, labels = [], [], []
+            for i, data_i in enumerate(dataloader_val):
+                image = data_i["image"]
+                if self.opt.gpu_ids != "-1":
+                    image = image.cuda()
+                image = (image + 1) / 2
+                #image = torch.nn.functional.interpolate(image,scale_factor = 0.5,mode ='nearest')
+                pool_val = self.model_inc(image.float())[0][:, :, 0, 0]
+                pool += [pool_val]
+        return torch.cat(pool, 0)
 
+    def compute_fid_with_valid_path(self, netG, netEMA,model = None):
+        pool, logits, labels = [], [], []
+        self.model_inc.eval()
+        netG.eval()
+        if not self.opt.no_EMA:
+            netEMA.eval()
+        with torch.no_grad():
+            for i, data_i in enumerate(self.val_dataloader):
+                image, label = models.preprocess_input(self.opt, data_i, test=False)
+                if self.opt.no_EMA:
+                    generated = netG(label)  #### should delete edge
+                else:
+                    generated = netEMA(label)
+                generated = (generated + 1) / 2
+                pool_val = self.model_inc(generated.float())[0][:, :, 0, 0]
+                pool += [pool_val]
+            pool = torch.cat(pool, 0)
+            mu, sigma = torch.mean(pool, 0), torch_cov(pool, rowvar=False)
+            answer = self.numpy_calculate_frechet_distance(self.m1, self.s1, mu, sigma)
+        netG.train()
+        if not self.opt.no_EMA:
+            netEMA.train()
+        return answer
 
-    total_samples = len(pips)
-    real_pool = torch.cat(pool1, 0)
-    mu_real, sigma_real = torch.mean(real_pool, 0), torch_cov(real_pool, rowvar=False)
-    fake_pool = torch.cat(pool2, 0)
-    mu_fake, sigma_fake = torch.mean(real_pool, 0), torch_cov(fake_pool, rowvar=False)
-    fid = numpy_calculate_frechet_distance(mu_real, sigma_real, mu_fake, sigma_fake, eps=1e-6)
-    avg_pips = sum(pips) / total_samples
-    avg_ssim = sum(ssim) / total_samples
-    avg_psnr = sum(psnr) / total_samples
-    avg_rmse = sum(rmse) / total_samples
-    avg_pips = np.array(avg_pips)
-    avg_ssim = np.array(avg_ssim)
-    avg_psnr = np.array(avg_psnr)
-    avg_rmse = np.array(avg_rmse)
-    fid_value = fid_score.calculate_fid_given_paths([path_real_root, path_fake_root], batch_size=50, device='cuda', dims=2048)
-    print(f"FID: {fid_value}")
-    print(avg_pips, avg_ssim, avg_psnr, avg_rmse)
-
-
-def numpy_calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
+    def numpy_calculate_frechet_distance(self, mu1, sigma1, mu2, sigma2, eps=1e-6):
         """Numpy implementation of the Frechet Distance.
         Taken from https://github.com/bioinf-jku/TTUR
         The Frechet distance between two multivariate Gaussians X_1 ~ N(mu_1, C_1)
@@ -130,6 +128,24 @@ def numpy_calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
         out = diff.dot(diff) + np.trace(sigma1) + np.trace(sigma2) - 2 * tr_covmean
         return out
 
+    def update(self, model, cur_iter):
+        print("--- Iter %s: computing FID ---" % (cur_iter))
+        cur_fid = self.compute_fid_with_valid_path(model.module.netG, model.module.netEMA,model)
+        self.update_logs(cur_fid, cur_iter)
+        print("--- FID at Iter %s: " % cur_iter, "{:.2f}".format(cur_fid))
+        if cur_fid < self.best_fid:
+            self.best_fid = cur_fid
+            is_best = True
+        else:
+            is_best = False
+        return is_best
+
+
+    def fid_test(self, model):
+        print("--- test: computing FID ---")
+        cur_fid = self.compute_fid_with_valid_path(model.module.netG, model.module.netEMA,model)
+        print("--- FID at test : ", "{:.2f}".format(cur_fid))
+
 
 def torch_cov(m, rowvar=False):
     '''Estimate a covariance matrix given data.
@@ -159,7 +175,3 @@ def torch_cov(m, rowvar=False):
     m -= torch.mean(m, dim=1, keepdim=True)
     mt = m.t()  # if complex: mt = m.t().conj()
     return fact * m.matmul(mt).squeeze()
-
-
-if __name__ == "__main__":
-    compute_metrics()
