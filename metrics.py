@@ -18,14 +18,15 @@ def compute_metrics( ):
         real_name = item.replace("condon_", "")
         path_real = os.path.join(path_real_root, real_name)
         input1 = Image.open(path_real)
-        input1 = np.array(input1)
+        input1 = np.array(input1)/255.0
         input2 = Image.open(path_fake)
-        input2 = np.array(input2)
+        input2 = np.array(input2)/255.0
 
         input3 = torch.tensor(input1, dtype=torch.float32)
         input4 = torch.tensor(input2, dtype=torch.float32)
         input3 = input3.unsqueeze(0).unsqueeze(0).to('cuda:0')  # (1, 1, 256, 256)
         input4 = input4.unsqueeze(0).unsqueeze(0).to('cuda:0')
+
         ssim_value = pytorch_msssim.ssim(input3, input4)
         ssim.append(ssim_value.mean().item())
         # PIPS lpips
