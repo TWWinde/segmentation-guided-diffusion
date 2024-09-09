@@ -22,7 +22,11 @@ def compute_metrics( ):
         input2 = Image.open(path_fake)
         input2 = np.array(input2)
 
-        ssim_value = pytorch_msssim.ssim(input1, input2)
+        input3 = torch.tensor(input1, dtype=torch.float32)
+        input4 = torch.tensor(input2, dtype=torch.float32)
+        input3 = input3.unsqueeze(0).unsqueeze(0)  # (1, 1, 256, 256)
+        input4 = input4.unsqueeze(0).unsqueeze(0)
+        ssim_value = pytorch_msssim.ssim(input3, input4)
         ssim.append(ssim_value.mean().item())
         # PIPS lpips
         d = loss_fn_alex(input1, input2)
