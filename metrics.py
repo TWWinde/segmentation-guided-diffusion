@@ -10,8 +10,8 @@ def compute_metrics( ):
     pips, ssim, psnr, rmse  = [], [], [], []
     loss_fn_alex = lpips.LPIPS(net='vgg')
     loss_fn_alex = loss_fn_alex.to('cuda:0')
-    path_real_root ="/data/private/autoPET/autopet_2d/image/test"
-    path_fake_root = ""
+    path_real_root = "/data/private/autoPET/autopet_2d/image/test"
+    path_fake_root = "/data/private/autoPET/ddim-AutoPET-256-segguided/samples_many_320"
     path_list = os.listdir(path_fake_root)
     for item in path_list:
         path_fake = os.path.join(path_fake_root, item)
