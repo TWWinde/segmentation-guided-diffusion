@@ -128,7 +128,7 @@ def compute_metrics_3d( ):
     mu_real, sigma_real = torch.mean(real_pool, 0), torch_cov(real_pool, rowvar=False)
     fake_pool = torch.cat(pool2, 0)
     mu_fake, sigma_fake = torch.mean(real_pool, 0), torch_cov(fake_pool, rowvar=False)
-    #fid = numpy_calculate_frechet_distance(mu_real, sigma_real, mu_fake, sigma_fake, eps=1e-6)
+    fid = numpy_calculate_frechet_distance(mu_real, sigma_real, mu_fake, sigma_fake, eps=1e-6)
     avg_pips = sum(pips) / total_samples
     avg_ssim = sum(ssim) / total_samples
     avg_psnr = sum(psnr) / total_samples
