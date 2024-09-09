@@ -4,7 +4,7 @@ import numpy as np
 import pytorch_msssim
 import lpips
 import torch
-
+from pytorch_fid import fid_score
 
 def compute_metrics( ):
     pips, ssim, psnr, rmse  = [], [], [], []
@@ -49,6 +49,8 @@ def compute_metrics( ):
     avg_ssim = np.array(avg_ssim)
     avg_psnr = np.array(avg_psnr)
     avg_rmse = np.array(avg_rmse)
+    fid_value = fid_score.calculate_fid_given_paths([path_real_root, path_fake_root], batch_size=50, device='cuda', dims=2048)
+    print(f"FID: {fid_value}")
     print(avg_pips, avg_ssim, avg_psnr, avg_rmse)
 
 if __name__ == "__main__":
