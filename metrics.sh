@@ -1,8 +1,8 @@
 #!/bin/bash -l
 
 #Slurm parameters
-#SBATCH --job-name=segguiddiff
-#SBATCH --output=segguiddiff%j.%N.out
+#SBATCH --job-name=metrics
+#SBATCH --output=metrics%j.%N.out
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --time=1-23:00:00
