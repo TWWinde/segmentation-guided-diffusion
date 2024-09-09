@@ -51,7 +51,7 @@ def compute_metrics( ):
         pool_real = model_inc(input3.float())[0][:, :, 0, 0]
         pool1 += [pool_real]
         pool_fake = model_inc(input4.float())[0][:, :, 0, 0]
-        pool2 += [pool_real]
+        pool2 += [pool_fake]
 
 
     total_samples = len(pips)
@@ -70,7 +70,7 @@ def compute_metrics( ):
     avg_rmse = np.array(avg_rmse)
     fid_value = fid_score.calculate_fid_given_paths([path_real_root, path_fake_root], batch_size=50, device='cuda', dims=2048)
     print(f"FID: {fid_value}")
-    print(avg_pips, avg_ssim, avg_psnr, avg_rmse)
+    print(avg_pips, avg_ssim, avg_psnr, avg_rmse, fid)
 
 
 def numpy_calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
