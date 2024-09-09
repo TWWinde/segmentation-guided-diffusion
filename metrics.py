@@ -75,6 +75,82 @@ def compute_metrics( ):
     print(avg_pips, avg_ssim, avg_psnr, avg_rmse, fid)
 
 
+def compute_metrics_3d( ):
+    pool1, pool2 = [], []
+    pips, ssim, psnr, rmse = [], [], [], []
+    loss_fn_alex = lpips.LPIPS(net='vgg')
+    loss_fn_alex = loss_fn_alex.to('cuda:0')
+    path_real_root = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/real"
+    path_fake_root = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/fake"
+    path_list = os.listdir(path_fake_root)
+    dims = 2048
+    block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[dims]
+    model_inc = InceptionV3([block_idx])
+    model_inc.cuda()
+    for item in path_list:
+        path_fake = os.path.join(path_fake_root, item)
+        real_name = item.replace("sample", "image")
+        path_real = os.path.join(path_real_root, real_name)
+
+        input1 = np.load(path_real)
+        input2 = np.load(path_fake)
+        print(input1.shape)
+        print(input2.shape)
+        for i in range(input1.shape[3]):
+
+
+        input3 = torch.tensor(input1, dtype=torch.float32)
+        input4 = torch.tensor(input2, dtype=torch.float32)
+        input3 = input3.unsqueeze(0).unsqueeze(0).to('cuda:0')  # (1, 1, 256, 256)
+        input4 = input4.unsqueeze(0).unsqueeze(0).to('cuda:0')
+
+        ssim_value = pytorch_msssim.ssim(input3, input4)
+        ssim.append(ssim_value.mean().item())
+        # PIPS lpips
+        d = loss_fn_alex(input3, input4)
+        pips.append(d.mean().item())
+        # PSNR, RMSE
+        mse = torch.nn.functional.mse_loss(input3, input4)
+        max_pixel_value = 1.0
+        psnr_value = 10 * torch.log10((max_pixel_value ** 2) / mse)
+        rmse_value = torch.sqrt(mse)
+        psnr.append(psnr_value.mean().item())
+        rmse.append(rmse_value.mean().item())
+        input3_rgb = input3.expand(-1, 3, -1, -1)
+        input4_rgb = input4.expand(-1, 3, -1, -1)
+        pool_real = model_inc(input3_rgb.float())[0][:, :, 0, 0]
+        pool1 += [pool_real]
+        pool_fake = model_inc(input4_rgb.float())[0][:, :, 0, 0]
+        pool2 += [pool_fake]
+
+
+    total_samples = len(pips)
+    real_pool = torch.cat(pool1, 0)
+    mu_real, sigma_real = torch.mean(real_pool, 0), torch_cov(real_pool, rowvar=False)
+    fake_pool = torch.cat(pool2, 0)
+    mu_fake, sigma_fake = torch.mean(real_pool, 0), torch_cov(fake_pool, rowvar=False)
+    fid = numpy_calculate_frechet_distance(mu_real, sigma_real, mu_fake, sigma_fake, eps=1e-6)
+    avg_pips = sum(pips) / total_samples
+    avg_ssim = sum(ssim) / total_samples
+    avg_psnr = sum(psnr) / total_samples
+    avg_rmse = sum(rmse) / total_samples
+    avg_pips = np.array(avg_pips)
+    avg_ssim = np.array(avg_ssim)
+    avg_psnr = np.array(avg_psnr)
+    avg_rmse = np.array(avg_rmse)
+    fid_value = fid_score.calculate_fid_given_paths([path_real_root, path_fake_root], batch_size=50, device='cuda', dims=2048)
+    print(f"FID: {fid_value}")
+    print(avg_pips, avg_ssim, avg_psnr, avg_rmse, fid)
+
+
+
+
+
+
+
+
+
+
 def numpy_calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
         """Numpy implementation of the Frechet Distance.
         Taken from https://github.com/bioinf-jku/TTUR
@@ -164,4 +240,5 @@ def torch_cov(m, rowvar=False):
 
 
 if __name__ == "__main__":
-    compute_metrics()
+    compute_metrics_3d()
+    #compute_metrics()
