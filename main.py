@@ -452,7 +452,7 @@ if __name__ == "__main__":
         args.num_epochs,
         args.resume_epoch,
         args.use_ablated_segmentations,
-        not args.eval_noshuffle_dataloader,
+        False,
 
         # args only used in eval
         args.eval_mask_removal,
