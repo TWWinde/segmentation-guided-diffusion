@@ -94,26 +94,26 @@ def main(
         if img_dir is not None:
             # make sure the images are matched to the segmentation masks
             img_dir_train = os.path.join(img_dir, "train")
-            img_paths_train = [os.path.join(img_dir_train, f) for f in os.listdir(img_dir_train)]
+            img_paths_train = [os.path.join(img_dir_train, f) for f in sorted(os.listdir(img_dir_train))]
             for seg_type in seg_types:
                 seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "train", f) for f in
-                                             os.listdir(img_dir_train)]
+                                             sorted(os.listdir(img_dir_train))]
         else:
             for seg_type in seg_types:
                 seg_paths_train[seg_type] = [os.path.join(seg_dir, seg_type, "test", f) for f in
-                                             os.listdir(os.path.join(seg_dir, seg_type, "test"))]
+                                             sorted(os.listdir(os.path.join(seg_dir, seg_type, "test")))]
 
         # eval set
         if img_dir is not None:
             img_dir_eval = os.path.join(img_dir, evalset_name)
-            img_paths_eval = [os.path.join(img_dir_eval, f) for f in os.listdir(img_dir_eval)]
+            img_paths_eval = [os.path.join(img_dir_eval, f) for f in sorted(os.listdir(img_dir_eval))]
             for seg_type in seg_types:
                 seg_paths_eval[seg_type] = [os.path.join(seg_dir, seg_type, evalset_name, f) for f in
-                                            os.listdir(img_dir_eval)]
+                                            sorted(os.listdir(img_dir_eval))]
         else:
             for seg_type in seg_types:
                 seg_paths_eval[seg_type] = [os.path.join(seg_dir, seg_type, evalset_name, f) for f in
-                                            os.listdir(os.path.join(seg_dir, seg_type, evalset_name))]
+                                            sorted(os.listdir(os.path.join(seg_dir, seg_type, evalset_name)))]
 
         if img_dir is not None:
             dset_dict_train = {
@@ -277,19 +277,19 @@ def main(
             torch.utils.data.TensorDataset(
                 torch.zeros(config.eval_batch_size, num_img_channels, config.image_size, config.image_size)),
             batch_size=config.eval_batch_size,
-            shuffle=eval_shuffle_dataloader
+            shuffle=False
         )
     else:
         train_dataloader = torch.utils.data.DataLoader(
             dataset_train,
             batch_size=config.train_batch_size,
-            shuffle=True
+            shuffle=False
         )
 
         eval_dataloader = torch.utils.data.DataLoader(
             dataset_eval,
             batch_size=config.eval_batch_size,
-            shuffle=eval_shuffle_dataloader
+            shuffle=False
         )
 
     # define the model
