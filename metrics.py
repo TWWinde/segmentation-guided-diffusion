@@ -94,8 +94,8 @@ def compute_metrics_3d( ):
 
         input1 = np.load(path_real)
         input2 = np.load(path_fake)
-        print(input1.shape)
-        print(input2.shape)
+        #print(input1.shape)
+        #print(input2.shape)
         for i in range(input1.shape[2]):
 
             input3 = torch.tensor(input1[:, :, i, :, :], dtype=torch.float32).to('cuda:0')

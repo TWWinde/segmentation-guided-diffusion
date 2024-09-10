@@ -73,12 +73,18 @@ def evaluate_sample_many(
                 ).images
 
             # save each image in the list separately
+            image_arrays = []
             for i, img in enumerate(images):
                 if config.segmentation_guided:
                     # name base on input mask fname
                     img_fname = "{}/condon_{}".format(sample_dir, seg_batch["image_filenames"][i])
+                    img_array = np.array(img)
+                    img_array = np.expand_dims(img_array, axis=0)
+                    image_arrays.append(img_array)
                 else:
                     img_fname = f"{sample_dir}/{num_sampled + i:04d}.png"
+                final_image_array = np.concatenate(image_arrays, axis=0)
+                np.save(img_fname, final_image_array)
                 img.save(img_fname)
 
             num_sampled += len(images)

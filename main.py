@@ -86,7 +86,7 @@ def main(
         print("image channels not 1 or 3, attempting to load images as np arrays...")
 
     if config.segmentation_guided:
-        seg_types = os.listdir(seg_dir)
+        seg_types = sorted(os.listdir(seg_dir))
         seg_paths_train = {}
         seg_paths_eval = {}
 
