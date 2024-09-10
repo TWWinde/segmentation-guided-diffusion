@@ -54,6 +54,7 @@ def evaluate_sample_many(
         os.makedirs(sample_dir)
 
     num_sampled = 0
+    num=0
     # keep sampling images until we have enough
     for bidx, seg_batch in tqdm(enumerate(eval_dataloader), total=len(eval_dataloader)):
         if num_sampled < sample_size:
@@ -79,13 +80,16 @@ def evaluate_sample_many(
                     # name base on input mask fname
                     img_fname = "{}/condon_{}".format(sample_dir, seg_batch["image_filenames"][i])
                     img_array = np.array(img)
-                    img_array = np.expand_dims(img_array, axis=0)
+                    img_array = np.expand_dims(img_array, axis=-1)
                     image_arrays.append(img_array)
                 else:
                     img_fname = f"{sample_dir}/{num_sampled + i:04d}.png"
-                final_image_array = np.concatenate(image_arrays, axis=0)
-                np.save(img_fname, final_image_array)
+
                 img.save(img_fname)
+            img_fname = "{}/acondon_{}.npy".format(sample_dir, num)
+            final_image_array = np.concatenate(image_arrays, axis=-1)
+            np.save(img_fname, final_image_array)
+            num+=1
 
             num_sampled += len(images)
             print("sampled {}/{}.".format(num_sampled, sample_size))
