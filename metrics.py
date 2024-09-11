@@ -270,7 +270,7 @@ def load_and_preprocess_images(image_dir, batch_size=32, save_dir='output_batche
 
 if __name__ == "__main__":
     image_dir = '/data/private/autoPET/autopet_2d/image/test'  # 替换为图片所在的文件夹
-    load_and_preprocess_images(image_dir, batch_size=32, save_dir='/data/private/autoPET/autopet_2d/image/npy')
+    #load_and_preprocess_images(image_dir, batch_size=32, save_dir='/data/private/autoPET/autopet_2d/image/npy')
     real_path = "/data/private/autoPET/autopet_2d/image/npy"
     fake_path = "/data/private/autoPET/ddim-AutoPET-256-segguided/samples_many_32000"
     compute_metrics_3d(real_path, fake_path)
