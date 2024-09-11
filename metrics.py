@@ -87,7 +87,7 @@ def compute_metrics_3d(path_real_root, path_fake_root):
     model_inc.cuda()
     for item in path_list:
         path_fake = os.path.join(path_fake_root, item)
-        path_real = os.path.join(path_real_root, real_name)
+        path_real = os.path.join(path_real_root, item)
 
         input1 = np.load(path_real)
         input2 = np.load(path_fake)
@@ -118,7 +118,6 @@ def compute_metrics_3d(path_real_root, path_fake_root):
             pool1 += [pool_real]
             pool_fake = model_inc(input4_rgb.float())[0][:, :, 0, 0]
             pool2 += [pool_fake]
-
 
     total_samples = len(pips)
     real_pool = torch.cat(pool1, 0)
@@ -267,6 +266,7 @@ def load_and_preprocess_images(image_dir, batch_size=32, save_dir='output_batche
 if __name__ == "__main__":
     image_dir = '/data/private/autoPET/autopet_2d/image/test'  # 替换为图片所在的文件夹
     load_and_preprocess_images(image_dir, batch_size=32, save_dir='/data/private/autoPET/autopet_2d/image/npy')
-
-    #compute_metrics_3d()
+    real_path = "/data/private/autoPET/autopet_2d/image/npy"
+    fake_path = "/data/private/autoPET/ddim-AutoPET-256-segguided/samples_many_32000"
+    compute_metrics_3d(real_path, fake_path)
     #compute_metrics()
