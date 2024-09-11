@@ -142,14 +142,6 @@ def compute_metrics_3d( ):
     print(avg_pips, avg_ssim, avg_psnr, avg_rmse, fid)
 
 
-
-
-
-
-
-
-
-
 def numpy_calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
         """Numpy implementation of the Frechet Distance.
         Taken from https://github.com/bioinf-jku/TTUR
@@ -238,6 +230,46 @@ def torch_cov(m, rowvar=False):
     return fact * m.matmul(mt).squeeze()
 
 
+def load_and_preprocess_images(image_dir, batch_size=32, save_dir='output_batches'):
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    images = []
+    batch_count = 0
+
+    for i in range(32000):
+        image_filename = f"ts_{i}.png"
+        image_path = os.path.join(image_dir, image_filename)
+
+        img = Image.open(image_path)
+
+        img_array = np.array(img)
+
+        img_array = img_array / 255.0
+
+        if img_array.ndim == 2:
+            img_array = np.expand_dims(img_array, axis=-1)
+
+        # 将处理后的图片添加到列表
+        images.append(img_array)
+
+        # 如果达到 batch_size（例如 32 张），保存为一个 npy 文件
+        if len(images) == batch_size:
+            # 拼接图片为一个四维数组 (batch_size, height, width, channels)
+            images_batch = np.stack(images, axis=-1)
+
+            # 保存为 .npy 文件
+            npy_filename = f'{save_dir}/acondon_{batch_count:04d}.npy'
+            np.save(npy_filename, images_batch)
+            print(f'Saved {npy_filename}')
+
+            images = []
+            batch_count += 1
+
+
 if __name__ == "__main__":
-    compute_metrics_3d()
+    image_dir = '/data/private/autoPET/autopet_2d/image/test'  # 替换为图片所在的文件夹
+    load_and_preprocess_images(image_dir, batch_size=32, save_dir='image_dir')
+
+    #compute_metrics_3d()
     #compute_metrics()
