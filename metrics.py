@@ -80,7 +80,7 @@ def compute_metrics_3d(path_real_root, path_fake_root):
     pips, ssim, psnr, rmse = [], [], [], []
     loss_fn_alex = lpips.LPIPS(net='vgg')
     loss_fn_alex = loss_fn_alex.to('cuda:0')
-    path_list = [i for i in os.listdir(path_real_root) if i.endswith(".npy")]
+    path_list = [i for i in sorted(os.listdir(path_real_root)) if i.endswith(".npy")]
     dims = 2048
     block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[dims]
     model_inc = InceptionV3([block_idx])
@@ -255,7 +255,7 @@ def load_and_preprocess_images(image_dir, batch_size=32, save_dir='output_batche
             images_batch = np.stack(images, axis=-1)
 
             # 保存为 .npy 文件
-            npy_filename = f'{save_dir}/acondon_{batch_count:04d}.npy'
+            npy_filename = f'{save_dir}/acondon_{batch_count}.npy'
             np.save(npy_filename, images_batch)
             print(f'Saved {npy_filename}')
 
@@ -265,7 +265,7 @@ def load_and_preprocess_images(image_dir, batch_size=32, save_dir='output_batche
 
 if __name__ == "__main__":
     image_dir = '/data/private/autoPET/autopet_2d/image/test'  # 替换为图片所在的文件夹
-    load_and_preprocess_images(image_dir, batch_size=32, save_dir='/data/private/autoPET/autopet_2d/image/npy')
+    #load_and_preprocess_images(image_dir, batch_size=32, save_dir='/data/private/autoPET/autopet_2d/image/npy')
     real_path = "/data/private/autoPET/autopet_2d/image/npy"
     fake_path = "/data/private/autoPET/ddim-AutoPET-256-segguided/samples_many_32000"
     compute_metrics_3d(real_path, fake_path)
