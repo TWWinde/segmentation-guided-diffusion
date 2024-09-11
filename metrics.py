@@ -89,10 +89,15 @@ def compute_metrics_3d(path_real_root, path_fake_root):
         path_fake = os.path.join(path_fake_root, item)
         path_real = os.path.join(path_real_root, item)
 
-        input1 = np.load(path_real)
-        input2 = np.load(path_fake)
+        input1 = np.load(path_real).transpose((2, 3, 0, 1))
+        input1 = np.expand_dims(input1, axis=0)
+        input2 = np.load(path_fake).transpose((-1, 0, 1))
+        input2 = np.expand_dims(input2, axis=0)
+        input2 = np.expand_dims(input2, axis=0)
         print(input1.shape)
         print(input2.shape)
+        #(256, 256, 1, 32)
+        #(256, 256, 32)
         for i in range(input1.shape[2]):
 
             input3 = torch.tensor(input1[:, :, i, :, :], dtype=torch.float32).to('cuda:0')
