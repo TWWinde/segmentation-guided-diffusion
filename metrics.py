@@ -75,21 +75,18 @@ def compute_metrics( ):
     print(avg_pips, avg_ssim, avg_psnr, avg_rmse, fid)
 
 
-def compute_metrics_3d( ):
+def compute_metrics_3d(path_real_root, path_fake_root):
     pool1, pool2 = [], []
     pips, ssim, psnr, rmse = [], [], [], []
     loss_fn_alex = lpips.LPIPS(net='vgg')
     loss_fn_alex = loss_fn_alex.to('cuda:0')
-    path_real_root = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/real"
-    path_fake_root = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_segconv_64out/video_results/fake"
-    path_list = os.listdir(path_fake_root)
+    path_list = [i for i in os.listdir(path_real_root) if i.endswith(".npy")]
     dims = 2048
     block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[dims]
     model_inc = InceptionV3([block_idx])
     model_inc.cuda()
     for item in path_list:
         path_fake = os.path.join(path_fake_root, item)
-        real_name = item.replace("sample", "image")
         path_real = os.path.join(path_real_root, real_name)
 
         input1 = np.load(path_real)
@@ -269,7 +266,7 @@ def load_and_preprocess_images(image_dir, batch_size=32, save_dir='output_batche
 
 if __name__ == "__main__":
     image_dir = '/data/private/autoPET/autopet_2d/image/test'  # 替换为图片所在的文件夹
-    load_and_preprocess_images(image_dir, batch_size=32, save_dir='image_dir')
+    load_and_preprocess_images(image_dir, batch_size=32, save_dir='/data/private/autoPET/autopet_2d/image/npy')
 
     #compute_metrics_3d()
     #compute_metrics()
