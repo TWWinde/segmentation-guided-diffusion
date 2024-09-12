@@ -88,41 +88,43 @@ def compute_metrics_3d(path_real_root, path_fake_root):
     for item in path_list:
         path_fake = os.path.join(path_fake_root, item)
         path_real = os.path.join(path_real_root, item)
+        try:
+            input1 = np.load(path_real).transpose((2, 3, 0, 1))
+            input1 = np.expand_dims(input1, axis=0)
+            input2 = np.load(path_fake).transpose((-1, 0, 1))
+            input2 = np.expand_dims(input2, axis=0)
+            input2 = np.expand_dims(input2, axis=0)
+            #print(input1.shape)
+            #print(input2.shape)
+            # (256, 256, 1, 32)
+            # (256, 256, 32)
+            for i in range(input1.shape[2]):
+                input3 = torch.tensor(input1[:, :, i, :, :], dtype=torch.float32).to('cuda:0')
+                input4 = torch.tensor(input2[:, :, i, :, :], dtype=torch.float32).to('cuda:0')
+                # input3 = input3.unsqueeze(0).unsqueeze(0).to('cuda:0')  # (1, 1, 256, 256)
+                # input4 = input4.unsqueeze(0).unsqueeze(0).to('cuda:0')
 
-        input1 = np.load(path_real).transpose((2, 3, 0, 1))
-        input1 = np.expand_dims(input1, axis=0)
-        input2 = np.load(path_fake).transpose((-1, 0, 1))
-        input2 = np.expand_dims(input2, axis=0)
-        input2 = np.expand_dims(input2, axis=0)
-        print(input1.shape)
-        print(input2.shape)
-        #(256, 256, 1, 32)
-        #(256, 256, 32)
-        for i in range(input1.shape[2]):
+                ssim_value = pytorch_msssim.ssim(input3, input4)
+                ssim.append(ssim_value.mean().item())
+                # PIPS lpips
+                d = loss_fn_alex(input3, input4)
+                pips.append(d.mean().item())
+                # PSNR, RMSE
+                mse = torch.nn.functional.mse_loss(input3, input4)
+                max_pixel_value = 1.0
+                psnr_value = 10 * torch.log10((max_pixel_value ** 2) / mse)
+                rmse_value = torch.sqrt(mse)
+                psnr.append(psnr_value.mean().item())
+                rmse.append(rmse_value.mean().item())
+                input3_rgb = input3.expand(-1, 3, -1, -1)
+                input4_rgb = input4.expand(-1, 3, -1, -1)
+                pool_real = model_inc(input3_rgb.float())[0][:, :, 0, 0]
+                pool1 += [pool_real]
+                pool_fake = model_inc(input4_rgb.float())[0][:, :, 0, 0]
+                pool2 += [pool_fake]
+        except:
+            print("wrong data")
 
-            input3 = torch.tensor(input1[:, :, i, :, :], dtype=torch.float32).to('cuda:0')
-            input4 = torch.tensor(input2[:, :, i, :, :], dtype=torch.float32).to('cuda:0')
-            #input3 = input3.unsqueeze(0).unsqueeze(0).to('cuda:0')  # (1, 1, 256, 256)
-            #input4 = input4.unsqueeze(0).unsqueeze(0).to('cuda:0')
-
-            ssim_value = pytorch_msssim.ssim(input3, input4)
-            ssim.append(ssim_value.mean().item())
-            # PIPS lpips
-            d = loss_fn_alex(input3, input4)
-            pips.append(d.mean().item())
-            # PSNR, RMSE
-            mse = torch.nn.functional.mse_loss(input3, input4)
-            max_pixel_value = 1.0
-            psnr_value = 10 * torch.log10((max_pixel_value ** 2) / mse)
-            rmse_value = torch.sqrt(mse)
-            psnr.append(psnr_value.mean().item())
-            rmse.append(rmse_value.mean().item())
-            input3_rgb = input3.expand(-1, 3, -1, -1)
-            input4_rgb = input4.expand(-1, 3, -1, -1)
-            pool_real = model_inc(input3_rgb.float())[0][:, :, 0, 0]
-            pool1 += [pool_real]
-            pool_fake = model_inc(input4_rgb.float())[0][:, :, 0, 0]
-            pool2 += [pool_fake]
 
     total_samples = len(pips)
     real_pool = torch.cat(pool1, 0)
