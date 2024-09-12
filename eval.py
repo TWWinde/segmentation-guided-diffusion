@@ -86,10 +86,10 @@ def evaluate_sample_many(
                     img_fname = f"{sample_dir}/{num_sampled + i:04d}.png"
 
                 img.save(img_fname)
-            img_fname = "{}/acondon_{}.npy".format(sample_dir, num)
-            final_image_array = np.concatenate(image_arrays, axis=-1)
-            np.save(img_fname, final_image_array)
-            num+=1
+            #img_fname = "{}/acondon_{}.npy".format(sample_dir, num)
+            #final_image_array = np.concatenate(image_arrays, axis=-1)
+            #np.save(img_fname, final_image_array)
+            #num+=1
 
             num_sampled += len(images)
             print("sampled {}/{}.".format(num_sampled, sample_size))
