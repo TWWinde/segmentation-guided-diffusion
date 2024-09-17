@@ -167,6 +167,7 @@ def compute_metrics_3d_our_model(root_path):
             print(input1.shape)
             print(input2.shape)
         else:
+            print(path_real, path_fake)
             print("scheiße")
 
             for i in range(input1.shape[2]):
