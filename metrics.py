@@ -156,8 +156,9 @@ def compute_metrics_3d_our_model(root_path):
     model_inc = InceptionV3([block_idx])
     model_inc.cuda()
     for item in path_list:
-        path_fake = os.path.join(root_path, "real", item)
-        path_real = os.path.join(root_path, "fake", item)
+        path_real = os.path.join(root_path, "real", item)
+        fake_item = item.replace("sample", "image")
+        path_fake = os.path.join(root_path, "fake", fake_item)
         if os.path.exists(path_fake) and os.path.exists(path_real):
             input1 = np.load(path_real)
             input1 = np.expand_dims(input1, axis=0)
