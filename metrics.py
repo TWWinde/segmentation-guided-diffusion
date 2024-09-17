@@ -161,14 +161,7 @@ def compute_metrics_3d_our_model(root_path):
         path_fake = os.path.join(root_path, "fake", fake_item)
         if os.path.exists(path_fake) and os.path.exists(path_real):
             input1 = np.load(path_real)
-            input1 = np.expand_dims(input1, axis=0)
             input2 = np.load(path_fake)
-            input2 = np.expand_dims(input2, axis=0)
-            print(input1.shape)
-            print(input2.shape)
-        else:
-            print(path_real, path_fake)
-            print("scheiße")
 
             for i in range(input1.shape[2]):
                 input3 = torch.tensor(input1[:, :, i, :, :], dtype=torch.float32).to('cuda:0')

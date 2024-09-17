@@ -43,7 +43,6 @@ export CUDA_LAUNCH_BLOCKING=1
   #  --segmentation_guided \
   #  --num_segmentation_classes 37
 
-python /no_backups/d1502/medicaldiffusion/dataset/data_process_2D.py
 
 CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --mode train \
