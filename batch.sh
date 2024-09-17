@@ -29,16 +29,32 @@ export CUDA_LAUNCH_BLOCKING=1
 
 # Run your python code
 
+#CUDA_VISIBLE_DEVICES=0 python3 main.py \
+    #--mode train \
+   # --model_type DDIM \
+    #--img_size 256 \
+    #--num_img_channels 1 \
+   # --dataset "AutoPET" \
+   # --img_dir "/data/private/autoPET/autopet_2d/image" \
+  #  --train_batch_size 8 \
+ #   --eval_batch_size 8 \
+  #  --num_epochs 400 \
+ #   --seg_dir "/data/private/autoPET/autopet_2d/mask" \
+  #  --segmentation_guided \
+  #  --num_segmentation_classes 37
+
+python /no_backups/d1502/medicaldiffusion/dataset/data_process_2D.py
+
 CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --mode train \
     --model_type DDIM \
     --img_size 256 \
     --num_img_channels 1 \
-    --dataset "AutoPET" \
-    --img_dir "/data/private/autoPET/autopet_2d/image" \
+    --dataset "Synthrad2023" \
+    --img_dir "/data/private/autoPET/synthrad2023_2d/image" \
     --train_batch_size 8 \
     --eval_batch_size 8 \
     --num_epochs 400 \
-    --seg_dir "/data/private/autoPET/autopet_2d/mask" \
+    --seg_dir "/data/private/autoPET/synthrad2023_2d/mask" \
     --segmentation_guided \
-    --num_segmentation_classes 37
+    --num_segmentation_classes 31
