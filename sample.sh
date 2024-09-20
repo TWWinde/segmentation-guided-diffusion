@@ -46,8 +46,8 @@ CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --model_type DDIM \
     --img_size 256 \
     --num_img_channels 1 \
-    --dataset "AutoPET" \
-    --eval_batch_size 32 \
+    --dataset "Synthrad2023" \
+    --eval_batch_size 16 \
     --eval_sample_size 3200 \
     --seg_dir "/data/private/autoPET/synthrad2023_2d/mask" \
     --segmentation_guided \
