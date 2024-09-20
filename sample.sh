@@ -10,7 +10,7 @@
 #SBATCH --nodes=1
 #SBATCH --gpus=1
 #SBATCH --qos=batch
-#SBATCH --nodelist=linse21
+# SBATCH --nodelist=linse21
 # SBATCH --qos=shortbatch
 # SBATCH --partition=highperf
 # SBATCH --gpus=rtx_a5000:1
@@ -39,8 +39,7 @@ export CUDA_LAUNCH_BLOCKING=1
  #   --eval_sample_size 32000 \
 #    --seg_dir "/data/private/autoPET/autopet_2d/mask" \
 #    --segmentation_guided \
-#    --num_segmentation_classes 37
-
+#    --num_segmentation_classes 37s
 
 CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --mode eval_many \
