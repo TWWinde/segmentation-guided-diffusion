@@ -13,8 +13,8 @@
 #SBATCH --nodelist=linse21
 # SBATCH --qos=shortbatch
 # SBATCH --partition=highperf
-#SBATCH --gpus=rtx_a5000:1
-#SBATCH --nodelist=linse19
+# SBATCH --gpus=rtx_a5000:1
+# SBATCH --nodelist=linse19
 
 
 # Activate everything you need
@@ -29,17 +29,17 @@ export CUDA_LAUNCH_BLOCKING=1
 
 # Run your python code
 
-CUDA_VISIBLE_DEVICES=0 python3 main.py \
-    --mode eval_many \
-    --model_type DDIM \
-    --img_size 256 \
-    --num_img_channels 1 \
-    --dataset "AutoPET" \
-    --eval_batch_size 32 \
-    --eval_sample_size 32000 \
-    --seg_dir "/data/private/autoPET/autopet_2d/mask" \
-    --segmentation_guided \
-    --num_segmentation_classes 37
+#CUDA_VISIBLE_DEVICES=0 python3 main.py \
+#    --mode eval_many \
+#    --model_type DDIM \
+#    --img_size 256 \
+#    --num_img_channels 1 \
+#    --dataset "AutoPET" \
+#    --eval_batch_size 32 \
+ #   --eval_sample_size 32000 \
+#    --seg_dir "/data/private/autoPET/autopet_2d/mask" \
+#    --segmentation_guided \
+#    --num_segmentation_classes 37
 
 
 CUDA_VISIBLE_DEVICES=0 python3 main.py \
@@ -49,7 +49,7 @@ CUDA_VISIBLE_DEVICES=0 python3 main.py \
     --num_img_channels 1 \
     --dataset "AutoPET" \
     --eval_batch_size 32 \
-    --eval_sample_size 32000 \
-    --seg_dir "/data/private/autoPET/autopet_2d/mask" \
+    --eval_sample_size 3200 \
+    --seg_dir "/data/private/autoPET/synthrad2023_2d/mask" \
     --segmentation_guided \
     --num_segmentation_classes 31
