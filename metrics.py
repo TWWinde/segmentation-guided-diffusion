@@ -157,7 +157,13 @@ def compute_metrics_3d_our_model(root_path):
     model_inc.cuda()
     for item in path_list:
         path_real = os.path.join(root_path, "real", item)
-        fake_item = item.replace("image", "sample")
+        if "ddpm" in root_path:
+            fake_item = item.replace("image", "sample")
+        elif "vq_gan" in root_path:
+            fake_item = item.replace("input", "recon")
+        else:
+            raise ValueError(f"Unsupported root_path: {root_path}")
+
         path_fake = os.path.join(root_path, "fake", fake_item)
         if os.path.exists(path_fake) and os.path.exists(path_real):
             input1 = np.load(path_real)
@@ -337,6 +343,7 @@ if __name__ == "__main__":
     real_path = "/data/private/autoPET/autopet_2d/image/npy"
     fake_path = "/data/private/autoPET/ddim-AutoPET-256-segguided/samples_many_32000"
     root = "/data/private/autoPET/medicaldiffusion_results/test_results/ddpm/AutoPET/output_with_vq_spade_segconv_64out/video_results"
-    compute_metrics_3d_our_model(root)
+    root1= "/data/private/autoPET/medicaldiffusion_results/test_results/vq_gan_3d/DUKE"
+    compute_metrics_3d_our_model(root1)
     #compute_metrics_3d(real_path, fake_path)
     #compute_metrics()
